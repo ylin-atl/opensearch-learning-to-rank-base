@@ -36,7 +36,7 @@ import org.opensearch.cluster.metadata.IndexMetadata;
 import org.opensearch.cluster.metadata.MetadataCreateIndexService;
 import org.opensearch.common.CheckedFunction;
 import org.opensearch.core.ParseField;
-import org.opensearch.common.bytes.BytesReference;
+import org.opensearch.core.common.bytes.BytesReference;
 import org.apache.logging.log4j.LogManager;
 import org.opensearch.common.settings.Setting;
 import org.opensearch.common.settings.Settings;

@@ -25,7 +25,7 @@ import com.o19s.es.ltr.ranker.LtrRanker;
 import org.apache.lucene.util.Accountable;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.unit.ByteSizeUnit;
-import org.opensearch.common.unit.ByteSizeValue;
+import org.opensearch.core.common.unit.ByteSizeValue;
 
 import java.io.IOException;
 
