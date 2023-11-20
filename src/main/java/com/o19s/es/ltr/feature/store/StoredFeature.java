@@ -111,7 +111,7 @@ public class StoredFeature implements Feature, Accountable, StorableElement {
     }
 
     public StoredFeature(String name, List<String> params, String templateLanguage, XContentBuilder template) {
-        this(name, params, templateLanguage, Strings.toString(Objects.requireNonNull(template)), false);
+        this(name, params, templateLanguage, StringHelper.toString(Objects.requireNonNull(template)), false);
     }
 
     @Override
