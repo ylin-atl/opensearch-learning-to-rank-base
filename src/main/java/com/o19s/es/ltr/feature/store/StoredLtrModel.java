@@ -25,7 +25,6 @@ import com.o19s.es.ltr.ranker.parser.LtrRankerParserFactory;
 import org.opensearch.Version;
 import org.opensearch.core.ParseField;
 import org.opensearch.core.common.ParsingException;
-import org.opensearch.common.Strings;
 import org.opensearch.core.common.io.stream.StreamInput;
 import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.core.common.io.stream.Writeable;
@@ -328,9 +327,10 @@ public class StoredLtrModel implements StorableElement {
                     try (XContentBuilder builder = JsonXContent.contentBuilder()) {
                         builder.copyCurrentStructure(parser);
                         modelAsString = false;
-                        definition = Strings.toString(builder);
+                        definition = StringHelper.toString(builder);
                     }
                 }
         }
+
     }
 }
