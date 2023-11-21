@@ -16,6 +16,7 @@
 
 package com.o19s.es.ltr.logging;
 
+import com.o19s.es.ltr.feature.store.StringHelper;
 import org.opensearch.core.common.ParsingException;
 import org.opensearch.core.common.Strings;
 import org.opensearch.common.io.stream.BytesStreamOutput;
@@ -71,7 +72,7 @@ public class LoggingSearchExtBuilderTests extends OpenSearchTestCase {
         XContentBuilder builder = XContentFactory.jsonBuilder();
         ext1.toXContent(builder, ToXContent.EMPTY_PARAMS);
         builder.close();
-        assertEquals(getTestExtAsString(), Strings.toString(builder));
+        assertEquals(getTestExtAsString(), StringHelper.toString(builder));
     }
 
     public void testSer() throws IOException {
