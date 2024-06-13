@@ -17,8 +17,8 @@
 package com.o19s.es.ltr.feature.store;
 
 import org.apache.lucene.tests.util.LuceneTestCase;
-import org.opensearch.common.ParsingException;
-import org.opensearch.common.Strings;
+import org.opensearch.core.common.ParsingException;
+import org.opensearch.core.common.Strings;
 import org.opensearch.common.xcontent.LoggingDeprecationHandler;
 import org.opensearch.core.xcontent.ToXContent;
 import org.opensearch.core.xcontent.XContentBuilder;

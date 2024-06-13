@@ -25,17 +25,14 @@ import org.apache.lucene.util.Accountable;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.RamUsageEstimator;
 import org.opensearch.core.ParseField;
-import org.opensearch.common.ParsingException;
-import org.opensearch.common.Strings;
-import org.opensearch.common.bytes.BytesReference;
-import org.opensearch.common.io.stream.StreamInput;
-import org.opensearch.common.io.stream.StreamOutput;
+import org.opensearch.core.common.ParsingException;
+import org.opensearch.core.common.Strings;
+import org.opensearch.core.common.bytes.BytesReference;
+import org.opensearch.core.common.io.stream.StreamInput;
+import org.opensearch.core.common.io.stream.StreamOutput;
 import org.opensearch.common.xcontent.LoggingDeprecationHandler;
-import org.opensearch.core.xcontent.NamedXContentRegistry;
-import org.opensearch.core.xcontent.ObjectParser;
-import org.opensearch.core.xcontent.XContentBuilder;
+import org.opensearch.core.xcontent.*;
 import org.opensearch.common.xcontent.XContentFactory;
-import org.opensearch.core.xcontent.XContentParser;
 import org.opensearch.common.xcontent.XContentType;
 import org.opensearch.index.query.QueryShardException;
 import org.opensearch.index.query.ScriptQueryBuilder;
@@ -79,11 +76,8 @@ public class StoredFeature implements Feature, Accountable, StorableElement {
         PARSER.declareField(ParsingState::setTemplate, (parser, value) -> {
             if (parser.currentToken() == XContentParser.Token.START_OBJECT) {
                 // Force json
-                try (XContentBuilder builder = XContentFactory.contentBuilder(XContentType.JSON)) {
-                    return builder.copyCurrentStructure(parser);
-                } catch (IOException e) {
-                    throw new ParsingException(parser.getTokenLocation(), "Could not parse inline template", e);
-                }
+                XContentBuilder builder = XContentBuilder.builder(parser.contentType().xContent());
+                return builder.copyCurrentStructure(parser);
             } else {
                 return parser.text();
             }
@@ -111,7 +105,7 @@ public class StoredFeature implements Feature, Accountable, StorableElement {
     }
 
     public StoredFeature(String name, List<String> params, String templateLanguage, XContentBuilder template) {
-        this(name, params, templateLanguage, Strings.toString(Objects.requireNonNull(template)), false);
+        this(name, params, templateLanguage, StringHelper.toString(Objects.requireNonNull(template)), false);
     }
 
     @Override
@@ -134,8 +128,8 @@ public class StoredFeature implements Feature, Accountable, StorableElement {
         } else {
             builder.field(TEMPLATE.getPreferredName());
             // it's ok to use NamedXContentRegistry.EMPTY because we don't really parse we copy the structure...
-            XContentParser parser = XContentFactory.xContent(template).createParser(NamedXContentRegistry.EMPTY,
-                    LoggingDeprecationHandler.INSTANCE, template);
+            MediaType mediaType = MediaTypeRegistry.JSON;
+            XContentParser parser = mediaType.xContent().createParser(NamedXContentRegistry.EMPTY, LoggingDeprecationHandler.INSTANCE, template);
             builder.copyCurrentStructure(parser);
         }
         builder.endObject();
@@ -214,22 +208,6 @@ public class StoredFeature implements Feature, Accountable, StorableElement {
         } catch (IOException | ParsingException | IllegalArgumentException e) {
             // wrap common exceptions as well so we can attach the feature's name to the stack
             throw new QueryShardException(context.getQueryShardContext(), "Cannot create query while parsing feature [" + name + "]", e);
-        }
-    }
-
-    private XContentParser createParser(Object source, NamedXContentRegistry registry) throws IOException {
-        if (source instanceof String) {
-            return XContentFactory.xContent((String) source).createParser(registry, LoggingDeprecationHandler.INSTANCE, (String) source);
-        } else if (source instanceof BytesReference) {
-            BytesRef ref = ((BytesReference) source).toBytesRef();
-            return XContentFactory.xContent(ref.bytes, ref.offset, ref.length)
-                    .createParser(registry, LoggingDeprecationHandler.INSTANCE,
-                            ref.bytes, ref.offset, ref.length);
-        } else if (source instanceof byte[]) {
-            return XContentFactory.xContent((byte[]) source).createParser(registry, LoggingDeprecationHandler.INSTANCE, (byte[]) source);
-        } else {
-            throw new IllegalArgumentException("Template engine returned an unsupported object type [" +
-                    source.getClass().getCanonicalName() + "]");
         }
     }
 

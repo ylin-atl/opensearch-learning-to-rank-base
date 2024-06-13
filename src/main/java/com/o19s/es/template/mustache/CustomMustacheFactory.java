@@ -27,7 +27,9 @@ import com.github.mustachejava.TemplateContext;
 import com.github.mustachejava.codes.DefaultMustache;
 import com.github.mustachejava.codes.IterableCode;
 import com.github.mustachejava.codes.WriteCode;
-import org.opensearch.common.Strings;
+import jdk.jshell.spi.ExecutionControl;
+import org.opensearch.core.common.Strings;
+import org.opensearch.core.xcontent.MediaTypeRegistry;
 import org.opensearch.core.xcontent.XContentBuilder;
 import org.opensearch.common.xcontent.XContentType;
 
@@ -216,7 +218,8 @@ public class CustomMustacheFactory extends DefaultMustacheFactory {
                         // Do not handle as JSON
                         return oh.stringify(resolved);
                     }
-                    return Strings.toString(builder);
+                    throw new MustacheException("");
+//                    return Strings.toString(builder.contentType(), builder.);
                 } catch (IOException e) {
                     throw new MustacheException("Failed to convert object to JSON", e);
                 }

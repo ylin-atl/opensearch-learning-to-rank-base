@@ -36,7 +36,7 @@ import org.opensearch.cluster.metadata.IndexMetadata;
 import org.opensearch.cluster.metadata.MetadataCreateIndexService;
 import org.opensearch.common.CheckedFunction;
 import org.opensearch.core.ParseField;
-import org.opensearch.common.bytes.BytesReference;
+import org.opensearch.core.common.bytes.BytesReference;
 import org.apache.logging.log4j.LogManager;
 import org.opensearch.common.settings.Setting;
 import org.opensearch.common.settings.Settings;
@@ -206,7 +206,7 @@ public class IndexFeatureStore implements FeatureStore {
      * @throws IOException in case of failures
      */
     public static XContentBuilder toSource(StorableElement elt) throws IOException {
-        XContentBuilder source = XContentFactory.contentBuilder(Requests.INDEX_CONTENT_TYPE);
+        XContentBuilder source = XContentFactoryHelper.contentBuilder(Requests.CONTENT_TYPE);
         source.startObject();
         source.field("name", elt.name());
         source.field("type", elt.type());
@@ -221,6 +221,7 @@ public class IndexFeatureStore implements FeatureStore {
 
     public static <E extends StorableElement> E parse(Class<E> eltClass, String type, byte[] bytes,
                                                       int offset, int length) throws IOException {
+
         try (XContentParser parser = XContentFactory.xContent(bytes)
                 .createParser(NamedXContentRegistry.EMPTY, LoggingDeprecationHandler.INSTANCE, bytes)) {
             return parse(eltClass, type, parser);
